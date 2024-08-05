@@ -102,6 +102,38 @@ def get_canonical_project(glb, project):
         return project
     raise Exception("Unexpected object type.")
 
+@retry_on_exception(
+    'Failed to canonicalize a group, will retry...',
+    [requests.exceptions.ConnectionError, requests.exceptions.ReadTimeout, gitlab.exceptions.GitlabHttpError]
+)
+def get_canonical_group(glb, group):
+    """
+    Ensure we have an instance of gitlab.*.Group.
+
+    :param glb: GitLab instance.
+    :param group: Either object already or path or group id.
+    """
+
+    if isinstance(group, (int, str)):
+        return glb.groups.get(group)
+    if isinstance(group, gitlab.v4.objects.Group):
+        return group
+    raise Exception("Unexpected object type.")
+
+@retry_on_exception(
+    'Failed to check group existence, will retry...',
+    [gitlab.exceptions.GitlabGetError]
+)
+def is_existing_group(glb, group_path):
+    try:
+        _ = get_canonical_group(glb, group_path)
+        return True
+    except gitlab.exceptions.GitlabGetError as exp:
+        if exp.response_code == http.HTTPStatus.NOT_FOUND:
+            return False
+        else:
+            raise
+
 
 def wait_for_project_to_be_forked(glb, project_path, timeout=None):
     """

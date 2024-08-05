@@ -593,6 +593,56 @@ def action_clone(
         mg.clone_or_fetch(glb, project, local_path)
         mg.reset_to_commit(local_path, last_commit.id)
 
+@register_command('create-group', 'Create new group')
+def create_group(
+    glb: GitlabInstanceParameter(),
+    logger: LoggerParameter(),
+    entries: ActionEntriesParameter(),
+    group_name_template: ActionParameter(
+        'name',
+        required=False,
+        metavar='NAME_OF_THE_GROUP',
+        help='Group name (title), formatted from CSV columns.'
+    ),
+    path_template: ActionParameter(
+        'path',
+        required=True,
+        metavar='GROUP_PATH',
+        help='String name of the path to the created group, formatted from CSV columns.'
+    ),
+    parent_group_template: ActionParameter(
+        'from',
+        required=True,
+        metavar='REPO_PATH_WITH_FORMAT',
+        help='Parent repository path, formatted from CSV columns.'
+    ),
+):
+    for entry in entries.as_items():
+        from_group = mg.get_canonical_group(glb, parent_group_template.format(**entry))
+
+        path_name = path_template.format(**entry)
+        group_path = from_group.full_path + '/' + path_name
+
+        if group_name_template:
+            group_name = group_name_template.format(**entry)
+        else:
+            group_name = path_name
+
+        if mg.is_existing_group(glb, group_path):
+            logger.info("Group %s already exists.", group_path)
+            continue
+
+        logger.info(
+            "Creating group %s in %s.",
+            group_name,
+            from_group.full_path,
+        )
+
+        glb.groups.create({
+            'name': group_name,
+            'path': path_name,
+            'parent_id': from_group.id
+        })
 
 @register_command('fork', 'Fork a project')
 def action_fork(
