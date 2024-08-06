@@ -613,8 +613,8 @@ def create_group(
     parent_group_template: ActionParameter(
         'from',
         required=True,
-        metavar='REPO_PATH_WITH_FORMAT',
-        help='Parent repository path, formatted from CSV columns.'
+        metavar='GROUP_PATH',
+        help='Parent group path, formatted from CSV columns.'
     ),
 ):
     for entry in entries.as_items():

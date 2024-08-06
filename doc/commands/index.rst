@@ -270,3 +270,30 @@ Overview of all commits, including line statistics, as JSON.
         --users students.csv \
         --project "teaching/nswi177/2020-summer/solution-{number}-{login}"
 
+
+
+``create-group``
+----------------
+
+Create a new group.
+
+For example, if we assume our ``students.csv`` also contains information
+about teachers, we can create a group for each teacher.
+
+code-block:: text
+
+    ukco,family_name,given_name,email,login,teacher_name,teacher_login
+    123456,John,Doe,john@example.com,doejo,Alice,ta1
+    123457,Jane,Doe,jane@example.com,doeja,Bob,ta2
+
+Then the following will create groups ``courses/sw-eng/2024/ta1/``
+(with name ``Alice``) and ``courses/sw-eng/2024/ta2/`` (named ``Bob``).
+
+.. code-block:: shell
+
+    teachers-gitlab create-group \
+        --config-file config.ini \
+        --users students.csv \
+        --from "courses/sw-eng/2024/" \
+        --path "{teacher_login}" \
+        --name "{teacher_name}"
