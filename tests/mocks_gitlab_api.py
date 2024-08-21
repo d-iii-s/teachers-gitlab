@@ -7,9 +7,11 @@ import gitlab
 import responses
 
 class MockedGitLabApi:
-    def __init__(self, rsps):
+    def __init__(self, rsps, check_reporting_unknowns=True):
         self.base_url = "http://localhost/"
         self.unknown_urls = []
+        self.report_unknown_activated = False
+        self.report_unknown_required = check_reporting_unknowns
         rsps.start()
 
         self.responses = rsps
@@ -22,6 +24,7 @@ class MockedGitLabApi:
             self.unknown_urls.append(log_line)
             return (404, {}, json.dumps({"error": "not implemented"}))
 
+        self.report_unknown_activated = True
         methods = [responses.GET, responses.POST, responses.DELETE, responses.PUT]
         for m in methods:
             self.responses.add_callback(
@@ -36,6 +39,10 @@ class MockedGitLabApi:
         if self.unknown_urls:
             unknowns = ', '.join(self.unknown_urls)
             raise Exception(f"Following URLs were not mocked: {unknowns}.")
+        if self.report_unknown_required:
+            assert self.report_unknown_activated, \
+                "Reporting unknown API calls not activated on GitLab mock " \
+                + "(have you called mock_gitlab.report_unknown()?)."
 
     def make_api_url_(self, suffix):
         return self.base_url + "api/v4/" + suffix

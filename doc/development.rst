@@ -66,6 +66,12 @@ The call to ``report_unknown`` registers a catch-all callback that will report
 any calls to GitLab API that are not mocked by the test. At this moment, this
 will report *all* calls (that is fine for now).
 
+Note that the tests will fail if you do not call ``report_unknown`` by yourself
+explicitly -- otherwise unknown calls would be silently ignored and the test
+would not be testing anything (unfortunately, the API does allow us to call
+``report_unknown`` only *after* all callbacks are registered and hence we
+need to add the call manually everywhere).
+
 And then we call the actual function that we want to test. We try to add user
 ``alpha`` to project ``base/alpha`` with access level *developer*.
 

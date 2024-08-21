@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Tests using `mock_gitlab` fixture must handle all API calls (@vhotspur)
+
 ### Deprecated
 
 ### Removed
