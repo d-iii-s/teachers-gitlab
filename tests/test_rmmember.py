@@ -82,7 +82,8 @@ def test_remove_member(mock_gitlab):
 
     mock_gitlab.on_api_get(
         'projects/42/members/2157753',
-        response_404=True
+        response_json={
+        }
     )
 
     mock_gitlab.on_api_get(
@@ -93,6 +94,10 @@ def test_remove_member(mock_gitlab):
                 'username': 'mario',
             }
         ]
+    )
+
+    mock_gitlab.on_api_delete(
+       'projects/42/members'
     )
 
     mock_gitlab.report_unknown()
