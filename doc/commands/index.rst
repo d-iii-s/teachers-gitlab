@@ -280,7 +280,7 @@ Create a new group.
 For example, if we assume our ``students.csv`` also contains information
 about teachers, we can create a group for each teacher.
 
-code-block:: text
+.. code-block:: text
 
     ukco,family_name,given_name,email,login,teacher_name,teacher_login
     123456,John,Doe,john@example.com,doejo,Alice,ta1
