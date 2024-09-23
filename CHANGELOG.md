@@ -12,16 +12,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+
+## v0.3.0 - 2024-09-23
+
+### Added
+
 * Command `create-group` (@otulach, @vhotspur)
 * Unit tests for `remove-member` (@otulach)
 
 ### Changed
 
 * Tests using `mock_gitlab` fixture must handle all API calls (@vhotspur)
-
-### Deprecated
-
-### Removed
 
 
 ## v0.2.1 - 2024-08-01
