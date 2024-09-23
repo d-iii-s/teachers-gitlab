@@ -294,6 +294,5 @@ Then the following will create groups ``courses/sw-eng/2024/ta1/``
     teachers-gitlab create-group \
         --config-file config.ini \
         --users students.csv \
-        --from "courses/sw-eng/2024/" \
-        --path "{teacher_login}" \
+        --path "courses/sw-eng/2024/{teacher_login}" \
         --name "{teacher_name}"
