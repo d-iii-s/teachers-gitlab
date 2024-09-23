@@ -610,37 +610,47 @@ def create_group(
         metavar='GROUP_PATH',
         help='String name of the path to the created group, formatted from CSV columns.'
     ),
-    parent_group_template: ActionParameter(
-        'from',
-        required=True,
-        metavar='GROUP_PATH',
-        help='Parent group path, formatted from CSV columns.'
-    ),
 ):
+    if path_template.startswith('/'):
+        logger.fatal("Group path could not start with /.")
+        return
     for entry in entries.as_items():
-        from_group = mg.get_canonical_group(glb, parent_group_template.format(**entry))
+        group_path = path_template.format(**entry)
 
-        path_name = path_template.format(**entry)
-        group_path = from_group.full_path + '/' + path_name
+        if mg.is_existing_group(glb, group_path):
+            logger.info("Group %s already exists.", group_path)
+            continue
 
         if group_name_template:
             group_name = group_name_template.format(**entry)
         else:
             group_name = path_name
 
-        if mg.is_existing_group(glb, group_path):
-            logger.info("Group %s already exists.", group_path)
+        parts = group_path.split("/")
+        parent_group_path = '/'.join(parts[:-1])
+        group_path_base = parts[-1]
+
+        try:
+            from_group = mg.get_canonical_group(glb, parent_group_path)
+        except gitlab.exceptions.GitlabGetError as exp:
+            logger.error(
+                "Unable to resolve parent group %s, skipping %s (%s).",
+                parent_group_path,
+                group_path_base,
+                group_name
+            )
             continue
 
         logger.info(
-            "Creating group %s in %s.",
+            "Creating group %s (%s) in %s.",
             group_name,
+            group_path_base,
             from_group.full_path,
         )
 
         glb.groups.create({
             'name': group_name,
-            'path': path_name,
+            'path': group_path_base,
             'parent_id': from_group.id
         })
 

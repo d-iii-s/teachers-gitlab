@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Command `create-group` (@otulach)
+* Command `create-group` (@otulach, @vhotspur)
 * Unit tests for `remove-member` (@otulach)
 
 ### Changed
