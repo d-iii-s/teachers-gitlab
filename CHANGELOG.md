@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Publish to PyPI with digital attestations (PEP 740) (@dependabot, @vhotspur)
+  * https://github.com/d-iii-s/teachers-gitlab/pull/13
+
 ### Deprecated
 
 ### Removed
