@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* `transfer-project` to move project to a new namespace (@kliberf, @vhotspur)
+* `update-fork-relationship` to update the parent repository (@kliberf)
+
 ### Changed
 
 * Publish to PyPI with digital attestations (PEP 740) (@dependabot, @vhotspur)

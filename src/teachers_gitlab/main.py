@@ -713,6 +713,86 @@ def action_fork(
         if hide_fork:
             mg.remove_fork_relationship(glb, to_project)
 
+@register_command('update-fork-relationship', 'Updates the fork relationship of a project')
+def action_update_fork_relationship(
+    glb: GitlabInstanceParameter(),
+    logger: LoggerParameter(),
+    entries: ActionEntriesParameter(),
+    forked_project_template: ActionParameter(
+        'forked_project',
+        required=True,
+        metavar='REPO_PATH_WITH_FORMAT',
+        help='Forked project repository path (the one being modified), formatted from CSV columns.'
+    ),
+    source_project_template: ActionParameter(
+        'source_project',
+        required=True,
+        metavar='REPO_PATH_WITH_FORMAT',
+        help='Source project repository path (or empty string to remove the relationship whatsoever), formatted from CSV columns.'
+    ),
+):
+    """
+    Updates fork relationship of one (or more) repositories
+    """
+
+    for entry, project in entries.as_gitlab_projects(glb, forked_project_template):
+        source_path = source_project_template.format(**entry)
+
+        if source_path:
+            logger.info(
+                "Updating fork relationship of %s to %s for user %s",
+                forked_project, source_path, user_name
+            )
+            mg.remove_fork_relationship(glb, forked_project)
+            mg.add_fork_relationship(glb, forked_project, source_path)
+
+        else:
+            logger.info(
+                "Removing fork relationship of %s for user %s",
+                forked_project, user_name
+            )
+            mg.remove_fork_relationship(glb, forked_project)
+
+@register_command('transfer-project', 'Transfers project to different namespace')
+def action_transfer_project(
+    glb: GitlabInstanceParameter(),
+    logger: LoggerParameter(),
+    entries: ActionEntriesParameter(),
+    project_template: ActionParameter(
+        'project',
+        required=True,
+        metavar='REPO_PATH_WITH_FORMAT',
+        help='Project to move, formatted from CSV columns.'
+    ),
+    target_namespace_template: ActionParameter(
+        'namespace',
+        required=True,
+        metavar='NAMESPACE_PATH_WITH_FORMAT',
+        help='Target namespace to which to move the project, formatted from CSV columns.'
+    ),
+):
+    """
+    Transfers one (or more) project to specified namespaces
+    """
+
+    for entry, project in entries.as_gitlab_projects(glb, project_template):
+        project = mg.get_canonical_project(glb, project_template.format(**entry))
+        target_namespace = target_namespace_template.format(**entry)
+
+        logger.info(
+            "Transfering project %s to namespace %s",
+            project.path_with_namespace, target_namespace
+        )
+        try:
+            project.transfer(target_namespace)
+        except gitlab.exceptions.GitlabTransferProjectError as e:
+            if (e.response_code == 400) and (e.error_message == mg.ERRMSG_PROJECT_ALREADY_IN_NAMESPACE):
+                logger.warning("Project already moved, doing nothing.")
+            else:
+                logger.error("Failed to transfer project: %s", e, exc_info=e)
+
+
+
 
 @register_command('protect', 'Protect a Git branch')
 def action_protect_branch(
