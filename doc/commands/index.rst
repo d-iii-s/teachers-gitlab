@@ -298,7 +298,7 @@ Then the following will create groups ``courses/sw-eng/2024/ta1/``
         --name "{teacher_name}"
 
 ``transfer-project``
-----------------
+--------------------
 
 Transfers a project to new namespace.
 
