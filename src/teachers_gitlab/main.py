@@ -718,7 +718,6 @@ def action_update_fork_relationship(
     glb: GitlabInstanceParameter(),
     logger: LoggerParameter(),
     entries: ActionEntriesParameter(),
-    login_column: LoginColumnActionParameter(),
     forked_project_template: ActionParameter(
         'forked_project',
         required=True,
@@ -736,10 +735,7 @@ def action_update_fork_relationship(
     Updates fork relationship of one (or more) repositories
     """
 
-    for entry, user in entries.as_gitlab_users(glb, login_column):
-        user_name = user.username if user else entry.get(login_column)
-
-        forked_project = forked_project_template.format(**entry)
+    for entry, project in entries.as_gitlab_projects(glb, forked_project_template):
         source_path = source_project_template.format(**entry)
 
         if source_path:
