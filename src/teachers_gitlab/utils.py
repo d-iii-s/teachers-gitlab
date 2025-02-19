@@ -178,6 +178,16 @@ def fork_project_idempotent(glb, parent, fork_namespace, fork_name):
     return get_canonical_project(glb, fork_identity)
 
 
+def add_fork_relationship(glb, forked_project, source_project):
+    """
+    Adds the 'forked from' relationship to a project from a source_project
+    """
+
+    forked_project = get_canonical_project(glb, forked_project)
+    source_project = get_canonical_project(glb, source_project)
+
+    forked_project.create_fork_relation(source_project.id)
+
 def remove_fork_relationship(glb, project):
     """
     Remove the 'forked from' relationship of a project.

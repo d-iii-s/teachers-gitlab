@@ -713,6 +713,50 @@ def action_fork(
         if hide_fork:
             mg.remove_fork_relationship(glb, to_project)
 
+@register_command('update-fork-relationship', 'Updates the fork relationship of a project')
+def action_update_fork_relationship(
+    glb: GitlabInstanceParameter(),
+    logger: LoggerParameter(),
+    entries: ActionEntriesParameter(),
+    login_column: LoginColumnActionParameter(),
+    forked_project_template: ActionParameter(
+        'forked_project',
+        required=True,
+        metavar='REPO_PATH_WITH_FORMAT',
+        help='Forked project repository path (the one being modified), formatted from CSV columns.'
+    ),
+    source_project_template: ActionParameter(
+        'source_project',
+        required=True,
+        metavar='REPO_PATH_WITH_FORMAT',
+        help='Source project repository path (or empty string to remove the relationship whatsoever), formatted from CSV columns.'
+    ),
+):
+    """
+    Updates fork relationship of one (or more) repositories
+    """
+
+    for entry, user in entries.as_gitlab_users(glb, login_column):
+        user_name = user.username if user else entry.get(login_column)
+
+        forked_project = forked_project_template.format(**entry)
+        source_path = source_project_template.format(**entry)
+
+        if source_path:
+            logger.info(
+                "Updating fork relationship of %s to %s for user %s",
+                forked_project, source_path, user_name
+            )
+            mg.remove_fork_relationship(glb, forked_project)
+            mg.add_fork_relationship(glb, forked_project, source_path)
+
+        else:
+            logger.info(
+                "Removing fork relationship of %s for user %s",
+                forked_project, user_name
+            )
+            mg.remove_fork_relationship(glb, forked_project)
+
 @register_command('transfer-project', 'Transfers project to different namespace')
 def action_transfer_project(
     glb: GitlabInstanceParameter(),
