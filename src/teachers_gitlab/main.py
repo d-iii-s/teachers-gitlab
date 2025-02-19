@@ -713,6 +713,41 @@ def action_fork(
         if hide_fork:
             mg.remove_fork_relationship(glb, to_project)
 
+@register_command('transfer-project', 'Transfers project to different namespace')
+def action_transfer_project(
+    glb: GitlabInstanceParameter(),
+    logger: LoggerParameter(),
+    entries: ActionEntriesParameter(),
+    login_column: LoginColumnActionParameter(),
+    project_template: ActionParameter(
+        'project',
+        required=True,
+        metavar='REPO_PATH_WITH_FORMAT',
+        help='Project to move, formatted from CSV columns.'
+    ),
+    target_namespace_template: ActionParameter(
+        'namespace',
+        required=True,
+        metavar='NAMESPACE_PATH_WITH_FORMAT',
+        help='Target namespace to which to move the project, formatted from CSV columns.'
+    ),
+):
+    """
+    Transfers one (or more) project to specified namespaces
+    """
+
+    for entry, user in entries.as_gitlab_users(glb, login_column):
+        user_name = user.username if user else entry.get(login_column)
+
+        project = mg.get_canonical_project(glb, project_template.format(**entry))
+        target_namespace = target_namespace_template.format(**entry)
+
+        logger.info(
+            "Transfering project %s to %s namespace for user %s",
+            project.path_with_namespace, target_namespace, user_name
+        )
+        project.transfer(target_namespace)
+
 
 @register_command('protect', 'Protect a Git branch')
 def action_protect_branch(

@@ -296,3 +296,31 @@ Then the following will create groups ``courses/sw-eng/2024/ta1/``
         --users students.csv \
         --path "courses/sw-eng/2024/{teacher_login}" \
         --name "{teacher_name}"
+
+``transfer-project``
+----------------
+
+Transfers a project to new namespace.
+
+For the following ``transfer_info.csv``
+
+.. code-block:: text
+
+    ukco,family_name,given_name,email,login,original_lab_schedule,new_lab_schedule
+    123456,John,Doe,john@example.com,doejo,24bNPRG038x05,24bNPRG038x03
+    123457,Jane,Doe,jane@example.com,doeja,24bNPRG038x04,24bNPRG038x05
+
+And for exisiting projects for ``doejo`` and ``doeja``, the following command
+
+.. code-block:: shell
+
+    teachers-gitlab transfer-project \
+        --config-file config.ini \
+        --users transfer_info.csv \
+        --project "courses/sw-eng/2024/{original_lab_schedule}/{login}" \
+        --namespace "courses/sw-eng/2024/{new_lab_schedule}"
+
+Will move the projects around according to the new schedule. Note that if the project
+is forked from some base specific for the group, it makes sense to also run
+``update-fork-relationship``. GitLab sends an email notification about this move.
+Also, GitLab redirects (at least for a while) the original URL to the new URL.
