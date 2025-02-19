@@ -762,7 +762,6 @@ def action_transfer_project(
     glb: GitlabInstanceParameter(),
     logger: LoggerParameter(),
     entries: ActionEntriesParameter(),
-    login_column: LoginColumnActionParameter(),
     project_template: ActionParameter(
         'project',
         required=True,
@@ -780,15 +779,13 @@ def action_transfer_project(
     Transfers one (or more) project to specified namespaces
     """
 
-    for entry, user in entries.as_gitlab_users(glb, login_column):
-        user_name = user.username if user else entry.get(login_column)
-
+    for entry, project in entries.as_gitlab_projects(glb, project_template):
         project = mg.get_canonical_project(glb, project_template.format(**entry))
         target_namespace = target_namespace_template.format(**entry)
 
         logger.info(
-            "Transfering project %s to %s namespace for user %s",
-            project.path_with_namespace, target_namespace, user_name
+            "Transfering project %s to namespace %s",
+            project.path_with_namespace, target_namespace
         )
         project.transfer(target_namespace)
 
