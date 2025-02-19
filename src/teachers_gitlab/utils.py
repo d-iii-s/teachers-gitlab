@@ -16,6 +16,10 @@ import time
 import gitlab
 import requests
 
+ERRMSG_PROJECT_ALREADY_IN_NAMESPACE = 'Failed to transfer project ' \
+    + '{:new_namespace=>["Project is already in this namespace."]}'
+
+
 
 def retries(
     n=None,

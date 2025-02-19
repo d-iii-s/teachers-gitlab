@@ -787,7 +787,15 @@ def action_transfer_project(
             "Transfering project %s to namespace %s",
             project.path_with_namespace, target_namespace
         )
-        project.transfer(target_namespace)
+        try:
+            project.transfer(target_namespace)
+        except gitlab.exceptions.GitlabTransferProjectError as e:
+            if (e.response_code == 400) and (e.error_message == mg.ERRMSG_PROJECT_ALREADY_IN_NAMESPACE):
+                logger.warning("Project already moved, doing nothing.")
+            else:
+                logger.error("Failed to transfer project: %s", e, exc_info=e)
+
+
 
 
 @register_command('protect', 'Protect a Git branch')
