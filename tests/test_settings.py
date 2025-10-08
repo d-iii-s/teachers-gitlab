@@ -11,23 +11,18 @@ def test_project_settings_changing_everything(mock_gitlab):
         },
     ]
 
-    mock_gitlab.register_project(42, 'student/alpha', mr_default_target_self='self')
-
-    mock_gitlab.on_api_put(
-        'projects/42',
-        request_json= {
-            'mr_default_target_self': True,
-        },
-        response_json={
-            'id': 42,
-            'path_with_namespace': 'student/alpha',
-        }
+    mock_gitlab.register_project(42, 'student/alpha',
+        mr_default_target_self=False,
+        description='',
+        squash_option="default_off"
     )
 
     mock_gitlab.on_api_put(
         'projects/42',
         request_json= {
+            'mr_default_target_self': True,
             'description': 'Semestral project for Alpha Able',
+            'squash_option': 'never',
         },
         response_json={
             'id': 42,
@@ -44,7 +39,8 @@ def test_project_settings_changing_everything(mock_gitlab):
         False,
         'student/{login}',
         'self',
-        'Semestral project for {name}'
+        'Semestral project for {name}',
+        'never'
     )
 
 
@@ -54,8 +50,11 @@ def test_project_settings_changing_only_name(mock_gitlab):
         {'login': 'beta'},
     ]
 
-    mock_gitlab.register_project(38, 'student/beta', mr_default_target_self='self')
-
+    mock_gitlab.register_project(38, 'student/beta',
+        mr_default_target_self=False,
+        description='',
+        squash_option="default_off"
+    )
     mock_gitlab.on_api_put(
         'projects/38',
         request_json= {
@@ -77,5 +76,6 @@ def test_project_settings_changing_only_name(mock_gitlab):
         False,
         'student/{login}',
         None,
-        'The best project'
+        'The best project',
+        'default_off'
     )
