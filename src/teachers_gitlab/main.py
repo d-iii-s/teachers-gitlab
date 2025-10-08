@@ -1251,29 +1251,34 @@ def action_project_settings(
     Change project settings.
     """
 
-    change_mr_default_target = mr_default_target is not None
-    mr_default_target_is_self = mr_default_target == 'self'
-
-    change_description = description is not None
+    def update_project_attribute(project, attr_name, new_value, changes):
+        current_value = getattr(project, attr_name)
+        if new_value is not None:
+            if current_value != new_value:
+                setattr(project, attr_name, new_value)
+                changes.append(f"'{project.path_with_namespace}': '{attr_name}': '{current_value}' -> '{new_value}'")
+                return True
+            else:
+                changes.append(f"'{project.path_with_namespace}': '{attr_name}': '{current_value}'")
+        return False
 
     for entry, project in entries.as_gitlab_projects(glb, project_template):
-        if change_mr_default_target:
-            is_self = project.mr_default_target_self
-            logger.debug("Project %s: mr_default_target_self=%s.", project.path_with_namespace, is_self)
-            if mr_default_target_is_self != is_self:
-                if not dry_run:
-                    project.mr_default_target_self = mr_default_target_is_self
-                    project.save()
-                logger.info("Changed default merge request target in %s to %s", project.path_with_namespace, mr_default_target)
-            else:
-                logger.info("Default merge request target in %s is already set to %s", project.path_with_namespace, mr_default_target)
-        if change_description:
-            new_description = description.format(**entry)
-            if not dry_run:
-                project.description = new_description
-                project.save()
-            logger.info("Changed description to %s", new_description)
+        changes_to_log = []
+        changes_map = {
+            'mr_default_target_self': mr_default_target == 'self',
+            'description': description.format(**entry),
+        }
+        needs_save = False
 
+        for attr, value in changes_map.items():
+            if update_project_attribute(project, attr, value, changes_to_log):
+                needs_save = True
+
+        if needs_save:
+            project.save()
+
+        for change in changes_to_log:
+            logger.info(change)
 
 
 @register_command('get-file', 'Fetch given files')
