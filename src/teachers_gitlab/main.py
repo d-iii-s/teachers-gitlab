@@ -1245,6 +1245,12 @@ def action_project_settings(
         metavar="DESCRIPTION_TEXT",
         default=None,
         help='The description of the project, formatted from CSV columns.'
+    ),
+    squash_during_merge: ActionParameter(
+        'squash-during-merge',
+        default="default_off",
+        choices=["never", "always", "default_on", "default_off"],
+        help="Squash checkbox settings when creating merge request."
     )
 ):
     """
@@ -1267,6 +1273,7 @@ def action_project_settings(
         changes_map = {
             'mr_default_target_self': mr_default_target == 'self',
             'description': description.format(**entry),
+            'squash_option': squash_during_merge
         }
         needs_save = False
 
