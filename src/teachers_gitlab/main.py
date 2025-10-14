@@ -1281,7 +1281,7 @@ def action_project_settings(
             if update_project_attribute(project, attr, value, changes_to_log):
                 needs_save = True
 
-        if needs_save:
+        if needs_save and not dry_run:
             project.save()
 
         for change in changes_to_log:
