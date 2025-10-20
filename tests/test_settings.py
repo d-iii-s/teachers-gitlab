@@ -44,7 +44,8 @@ def test_project_settings_changing_everything(mock_gitlab):
         False,
         'student/{login}',
         'self',
-        'Semestral project for {name}'
+        'Semestral project for {name}',
+        None,
     )
 
 
@@ -77,5 +78,39 @@ def test_project_settings_changing_only_name(mock_gitlab):
         False,
         'student/{login}',
         None,
-        'The best project'
+        'The best project',
+        None
+    )
+
+
+def test_project_settings_changing_only_visibility(mock_gitlab):
+    entries = [
+        {'login': 'beta'},
+    ]
+
+    mock_gitlab.register_project(54, 'student/beta', mr_default_target_self='self', visibility='private')
+
+    mock_gitlab.on_api_put(
+        'projects/54',
+        request_json= {
+            'visibility': 'public',
+        },
+        response_json={
+            'id': 54,
+            'path_with_namespace': 'student/beta',
+        }
+    )
+
+    mock_gitlab.report_unknown()
+
+
+    tg.action_project_settings(
+        mock_gitlab.get_python_gitlab(),
+        logging.getLogger('settings'),
+        tg.ActionEntries(entries),
+        False,
+        'student/{login}',
+        None,
+        None,
+        'public',
     )

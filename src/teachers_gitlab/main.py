@@ -1245,7 +1245,13 @@ def action_project_settings(
         metavar="DESCRIPTION_TEXT",
         default=None,
         help='The description of the project, formatted from CSV columns.'
-    )
+    ),
+    visibility: ActionParameter(
+        'visibility',
+        default=None,
+        choices=['private', 'internal', 'public'],
+        help='The visibility level of the project.',
+    ),
 ):
     """
     Change project settings.
@@ -1267,12 +1273,24 @@ def action_project_settings(
                 logger.info("Changed default merge request target in %s to %s", project.path_with_namespace, mr_default_target)
             else:
                 logger.info("Default merge request target in %s is already set to %s", project.path_with_namespace, mr_default_target)
+        
         if change_description:
             new_description = description.format(**entry)
             if not dry_run:
                 project.description = new_description
                 project.save()
             logger.info("Changed description to %s", new_description)
+        
+        if visibility is not None:
+            if project.visibility == visibility:
+                logger.info("Visibility of %s is already %s", project.path_with_namespace, visibility)
+            else:
+                old_visibility = project.visibility
+                if not dry_run:
+                    project.visibility = visibility
+                    project.save()
+                logger.info("Changed visibility of %s from %s to %s",
+                            project.path_with_namespace, old_visibility, visibility)
 
 
 
