@@ -740,18 +740,18 @@ def action_update_fork_relationship(
 
         if source_path:
             logger.info(
-                "Updating fork relationship of %s to %s for user %s",
-                forked_project, source_path, user_name
+                "Updating fork relationship of %s to %s",
+                project.path_with_namespace, source_path
             )
-            mg.remove_fork_relationship(glb, forked_project)
-            mg.add_fork_relationship(glb, forked_project, source_path)
+            mg.remove_fork_relationship(glb, project)
+            mg.add_fork_relationship(glb, project, source_path)
 
         else:
             logger.info(
-                "Removing fork relationship of %s for user %s",
-                forked_project, user_name
+                "Removing fork relationship of %s",
+                project.path_with_namespace
             )
-            mg.remove_fork_relationship(glb, forked_project)
+            mg.remove_fork_relationship(glb, project)
 
 @register_command('transfer-project', 'Transfers project to different namespace')
 def action_transfer_project(
