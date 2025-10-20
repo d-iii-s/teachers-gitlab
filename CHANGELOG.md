@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+* changing project visibility in `project-settings` (@krulis-martin)
+* changing squash option in `project-settings` (@kliberf)
 * `transfer-project` to move project to a new namespace (@kliberf, @vhotspur)
 * `update-fork-relationship` to update the parent repository (@kliberf)
 
