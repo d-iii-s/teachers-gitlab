@@ -1252,46 +1252,47 @@ def action_project_settings(
         choices=['private', 'internal', 'public'],
         help='The visibility level of the project.',
     ),
+    squash_during_merge: ActionParameter(
+        'squash-during-merge',
+        default=None,
+        choices=['never', 'always', 'default_on', 'default_off'],
+        help='Squash checkbox settings when creating merge request.'
+    )
 ):
     """
     Change project settings.
     """
 
-    change_mr_default_target = mr_default_target is not None
-    mr_default_target_is_self = mr_default_target == 'self'
-
-    change_description = description is not None
+    def update_project_attribute(project, attr_name, new_value, changes):
+        current_value = getattr(project, attr_name)
+        if new_value is not None:
+            if current_value != new_value:
+                setattr(project, attr_name, new_value)
+                changes.append(f"'{project.path_with_namespace}': '{attr_name}': '{current_value}' -> '{new_value}'")
+                return True
+            else:
+                changes.append(f"'{project.path_with_namespace}': '{attr_name}': '{current_value}'")
+        return False
 
     for entry, project in entries.as_gitlab_projects(glb, project_template):
-        if change_mr_default_target:
-            is_self = project.mr_default_target_self
-            logger.debug("Project %s: mr_default_target_self=%s.", project.path_with_namespace, is_self)
-            if mr_default_target_is_self != is_self:
-                if not dry_run:
-                    project.mr_default_target_self = mr_default_target_is_self
-                    project.save()
-                logger.info("Changed default merge request target in %s to %s", project.path_with_namespace, mr_default_target)
-            else:
-                logger.info("Default merge request target in %s is already set to %s", project.path_with_namespace, mr_default_target)
-        
-        if change_description:
-            new_description = description.format(**entry)
-            if not dry_run:
-                project.description = new_description
-                project.save()
-            logger.info("Changed description to %s", new_description)
-        
-        if visibility is not None:
-            if project.visibility == visibility:
-                logger.info("Visibility of %s is already %s", project.path_with_namespace, visibility)
-            else:
-                old_visibility = project.visibility
-                if not dry_run:
-                    project.visibility = visibility
-                    project.save()
-                logger.info("Changed visibility of %s from %s to %s",
-                            project.path_with_namespace, old_visibility, visibility)
+        changes_to_log = []
+        changes_map = {
+            'mr_default_target_self': mr_default_target == 'self' if mr_default_target else None,
+            'description': description.format(**entry) if description else None,
+            'squash_option': squash_during_merge if squash_during_merge else None,
+            'visibility': visibility if visibility else None,
+        }
+        needs_save = False
 
+        for attr, value in changes_map.items():
+            if update_project_attribute(project, attr, value, changes_to_log):
+                needs_save = True
+
+        if needs_save and not dry_run:
+            project.save()
+
+        for change in changes_to_log:
+            logger.info(change)
 
 
 @register_command('get-file', 'Fetch given files')
