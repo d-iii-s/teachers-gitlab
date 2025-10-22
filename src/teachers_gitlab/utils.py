@@ -261,12 +261,16 @@ def get_file_contents(glb, project, branch, file_path):
 
     project = get_canonical_project(glb, project)
     base_filename = os.path.basename(file_path)
-    files = project.repository_tree(
-        path=os.path.dirname(file_path),
-        ref=branch,
-        all=True,
-        as_list=False
-    )
+    try:
+        files = project.repository_tree(
+            path=os.path.dirname(file_path),
+            ref=branch,
+            all=True,
+            as_list=False
+        )
+    except gitlab.exceptions.GitlabGetError:
+        # Raised when the directory does not exist at all
+        return None
     current_file = [f for f in files if f['name'] == base_filename]
     if not current_file:
         return None

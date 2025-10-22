@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* `put-file` works even if remote file does not exist (@vhotspur)
+
 ### Added
 
 * changing project visibility in `project-settings` (@krulis-martin)
