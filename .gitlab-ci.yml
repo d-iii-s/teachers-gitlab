@@ -18,3 +18,11 @@ pytest:
     - pip install -r requirements.txt
     - pip install -r requirements-dev.txt
     - env PYTHONPATH=src pytest -vvv tests/
+
+# Check MFF GitLab and GitHub are in sync on master branches
+git-mirrors:
+  image: python:3.12
+  script:
+    - ./.github/check-git-mirrors-synchronized.sh
+  rules:
+    - if: ($CI_PIPELINE_SOURCE == "schedule") && ($SCHEDULE_INTERVAL == "daily")
