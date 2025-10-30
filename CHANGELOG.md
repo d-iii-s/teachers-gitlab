@@ -10,6 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+
+## v0.4.0 - 2025-10-30
+
+### Fixed
+
 * `put-file` works even if remote file does not exist (@vhotspur)
 
 ### Added
@@ -23,10 +36,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Publish to PyPI with digital attestations (PEP 740) (@dependabot, @vhotspur)
   * https://github.com/d-iii-s/teachers-gitlab/pull/13
-
-### Deprecated
-
-### Removed
 
 
 ## v0.3.0 - 2024-09-23
