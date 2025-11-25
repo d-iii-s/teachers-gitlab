@@ -1264,7 +1264,7 @@ def action_project_settings(
     """
 
     def update_project_attribute(project, attr_name, new_value, changes):
-        current_value = getattr(project, attr_name)
+        current_value = getattr(project, attr_name, None)
         if new_value is not None:
             if current_value != new_value:
                 setattr(project, attr_name, new_value)
