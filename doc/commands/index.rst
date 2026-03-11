@@ -32,10 +32,33 @@ Fork repository for all users given in a CSV file.
     --hide-fork
 
 
-will fork the `teaching/course/upstream/template` into
+This will fork the `teaching/course/upstream/template` into
 repositories `teaching/course/student-1-student1`
 and `teaching/course/student-2-student2`, removing the
 fork relationship.
+
+.. warning::
+   Forking a public project creates a public fork.
+
+
+
+``project-settings``
+--------------------
+
+Change project settings.
+
+``--merge-request-default-target {self,upstream}``
+   Change default merge request.
+
+   Recommended to set to ``self`` to prevent students opening merge requests
+   of their private work on the shared parent project.
+
+``--description "Implementation by {name} {surname}"``
+   Change project description, can read fields from CSV.
+
+``--visibility {private,internal,public}``
+   Change project visibility.
+
 
 
 ``protect``

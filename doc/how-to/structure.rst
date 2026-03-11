@@ -65,6 +65,9 @@ So in the end the structure for each of our courses looks like this.
    the students might need to merge from it. Adding all students to it is also
    possible.
 
+   Note that forking a public project creates a public fork
+   (see `project-settings` command to change that).
+
 ``/teaching/COURSE/20XX/common/examples``
    Whatever other project we need is placed into the ``common`` namespace.
 
