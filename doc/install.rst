@@ -1,7 +1,7 @@
 Installation
 ============
 
-The following command will install `teachers_gitlab` command to a
+The following command will install `teachers-gitlab` command to a
 system-wide installation directory (installation in a virtual environment
 is also possible, see development notes, please).
 

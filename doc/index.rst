@@ -47,7 +47,7 @@ for example) for all students.
 
 .. code-block:: shell
 
-    teachers_gitlab \
+    teachers-gitlab \
         fork \
         --entries students.csv \
         --from 'courses/software-magic/base' \
@@ -61,7 +61,7 @@ to go.
 
 .. code-block:: shell
 
-    teachers_gitlab \
+    teachers-gitlab \
         add-member \
         --entries students.csv \
         --project 'courses/software-magic/students/{group}/{login}' \
